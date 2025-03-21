@@ -64,6 +64,18 @@ public class Player extends Entity {
             x+= speed;
         }
 
+        spriteCounter++;
+        if (spriteCounter> 15) {
+
+            if (spriteNum==1){
+                spriteNum=2;
+            }
+            else if (spriteNum==2){
+                spriteNum=1;
+            }
+            spriteCounter=0;
+        }
+
     }
     public void draw (Graphics g2) {
 //        g2.setColor(Color.WHITE);
@@ -73,19 +85,21 @@ public class Player extends Entity {
 
         switch (direction) {
             case "up":
-                image = up1;
+                image = (spriteNum == 1) ? up1 : up2;
                 break;
-                case "down":
+            case "down":
+                image = (spriteNum == 1) ? down1 : down2;
+                break;
+            case "left":
+                image = (spriteNum == 1) ? left1 : left2;
+                break;
+            case "right":
+                image = (spriteNum == 1) ? right1 : right2;
+                break;
+            default:
                 image = down1;
-                break;
-                case "left":
-                image = left1;
-                break;
-                case "right":
-                image = right1;
-                break;
-                default:
         }
+
         g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
     }
 }
