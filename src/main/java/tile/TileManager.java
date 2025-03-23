@@ -17,7 +17,7 @@ public class TileManager {
         tile = new Tile[10];
         mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
         getTileImage();
-        loadMap("maps/world01.txt");
+        loadMap("/maps/world01.txt");
     }
 
     private void getTileImage() {
@@ -25,7 +25,7 @@ public class TileManager {
             System.out.println(mapTileNum);
             tile[0] = new Tile();
             tile[0].image = ImageIO.read(getClass().getResourceAsStream("/tiles/grass.png"));
-//
+
             tile[1] = new Tile();
             tile[1].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wall.png"));
 
@@ -57,7 +57,6 @@ public class TileManager {
                 String[] numbers = line.split(" ");
                 for (int col = 0; col < gp.maxWorldCol; col++) {
                     mapTileNum[row][col] = Integer.parseInt(numbers[col]);
-
                 }
             }
         } catch (Exception e) {
