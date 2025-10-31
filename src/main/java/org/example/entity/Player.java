@@ -20,7 +20,9 @@ public class Player extends Entity {
         this.keyH = keyH;
 
         screenX= gp.screenWidth/2 - (gp.tileSize/2);
-        screenY= gp.screenHeight/2 -(gp.tileSize/2);
+        screenY=gp.screenHeight/2 - (gp.tileSize/2);
+        solidArea= new Rectangle(8,16,32,32);
+
 
         setDefaultVaulues();
         getPLayerImage();
@@ -51,38 +53,53 @@ public class Player extends Entity {
 
     }
 
-    public void update(){
-        if(keyH.upPRessed==true) {
+    public void update() {
+        boolean moving = false;
+
+        // --- Check key input ---
+        if (keyH.upPRessed) {
             direction = "up";
-            worldY-=speed;
-
+            moving = true;
         }
-        else if (keyH.downPRessed==true) {
+        else if (keyH.downPRessed) {
             direction = "down";
-            worldY+= speed;
+            moving = true;
         }
-        else if (keyH.leftPRessed==true) {
+        else if (keyH.leftPRessed) {
             direction = "left";
-            worldX-=speed;
+            moving = true;
         }
-        else if (keyH.rightPRessed==true) {
+        else if (keyH.rightPRessed) {
             direction = "right";
-            worldX+= speed;
+            moving = true;
         }
 
-        spriteCounter++;
-        if (spriteCounter> 15) {
+        // --- Check for collisions ---
+        collisionOn = false;
+        gp.cChecker.checkTile(this);
 
-            if (spriteNum==1){
-                spriteNum=2;
+        // --- Move only if a key was pressed ---
+        if (moving && !collisionOn) {
+            switch (direction) {
+                case "up": worldY -= speed; break;
+                case "down": worldY += speed; break;
+                case "left": worldX -= speed; break;
+                case "right": worldX += speed; break;
             }
-            else if (spriteNum==2){
-                spriteNum=1;
-            }
-            spriteCounter=0;
         }
 
+        // --- Handle walking animation only when moving ---
+        if (moving) {
+            spriteCounter++;
+            if (spriteCounter > 15) {
+                spriteNum = (spriteNum == 1) ? 2 : 1;
+                spriteCounter = 0;
+            }
+        } else {
+            spriteNum = 1; // idle frame
+        }
     }
+
     public void draw (Graphics g2) {
 //        g2.setColor(Color.WHITE);
 //        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
