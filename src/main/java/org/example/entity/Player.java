@@ -13,6 +13,7 @@ public class Player extends Entity {
     KeyHandler keyH;
     public final int screenX;
     public final int screenY;
+    int hasKey= 0;
 
 
     public Player(GamePanel gp, KeyHandler keyH) {
@@ -22,6 +23,8 @@ public class Player extends Entity {
         screenX= gp.screenWidth/2 - (gp.tileSize/2);
         screenY=gp.screenHeight/2 - (gp.tileSize/2);
         solidArea= new Rectangle(8,16,32,32);
+        solidAreaDefaultX= solidArea.x;
+        solidAreaDefaultY= solidArea.y;
 
 
         setDefaultVaulues();
@@ -78,6 +81,11 @@ public class Player extends Entity {
         collisionOn = false;
         gp.cChecker.checkTile(this);
 
+        //check obj collision
+        int objIndex = gp.cChecker.checkObject(this,true);
+        pickUpObject(objIndex);
+
+
         // --- Move only if a key was pressed ---
         if (moving && !collisionOn) {
             switch (direction) {
@@ -99,10 +107,29 @@ public class Player extends Entity {
             spriteNum = 1; // idle frame
         }
     }
+   public void pickUpObject (int i){
+       if (i != 999){
+           String objectName= gp.obj[i].name;
+           switch (objectName){
+               case "key":
+               hasKey ++;
+               gp.obj[i] = null;
+                   System.out.println("key" + hasKey);
+               break;
+               case "Door":
+               if (hasKey >0){
+                   gp.obj[i] = null;
+                   hasKey --;
+               }
+                   System.out.println("key" + hasKey);
+               break;
+           }
+       }
+   }
 
     public void draw (Graphics g2) {
-//        g2.setColor(Color.WHITE);
-//        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+        //  g2.setColor(Color.WHITE);
+        //  g2.fillRect(x, y, gp.tileSize, gp.tileSize);
 
         BufferedImage image = null;
 

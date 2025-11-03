@@ -12,7 +12,7 @@ public class OBJ_Door extends SuperObject{
         }catch (IOException e){
             e.printStackTrace();
         }
-        System.out.println("Key image loaded: " + (image != null));
+        collision= true;
 
     }
 }
