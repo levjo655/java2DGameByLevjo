@@ -9,36 +9,33 @@ import java.awt.*;
 
 public class GamePanel extends JPanel implements Runnable {
     // screen settings
-    final int originalTileSize= 16;
-    final int scale= 3;
+    final int originalTileSize = 16;
+    final int scale = 3;
+    public final int tileSize = originalTileSize * scale;
+    public final int maxScreenCol = 16;
+    public final int maxScreenRow = 12;
+    public final int screenWidth = tileSize * maxScreenCol;
+    public final int screenHeight = tileSize * maxScreenRow;
+
+    //World settings
+    public final int maxWorldCol = 50;
+    public final int maxWorldRow = 50;
 
 
+    //FPS
+    int FPS = 60;
 
-   public  final int tileSize= originalTileSize * scale;
-   public final int maxScreenCol= 16;
-   public final int maxScreenRow= 12;
-   public final int screenWidth= tileSize * maxScreenCol;
-   public final int screenHeight= tileSize * maxScreenRow;
-
-
-    public final int maxWorldCol= 50;
-    public final int maxWorldRow= 50;;
-    public final int worldWidth= tileSize * maxWorldCol;
-    public final int worldHeight= tileSize * maxWorldRow;
-
-
-
-
-    int FPS= 60;
+    // the system
     TileManager tileM = new TileManager(this);
-    KeyHandler keyH= new KeyHandler();
-    Thread gameThread;
+    KeyHandler keyH = new KeyHandler();
+    Sound sound = new Sound();
+
     public CollisionChecker cChecker = new CollisionChecker(this);
     public AssetSetter aSetter = new AssetSetter(this);
-    public Player  player = new Player (this, keyH);
+    public Player player = new Player(this, keyH);
+    Thread gameThread;
 
-    public SuperObject obj[]  = new SuperObject[10];
-
+    public SuperObject obj[] = new SuperObject[10];
 
 
     public GamePanel() {
@@ -49,12 +46,13 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
     }
 
-    public void setupGame(){
+    public void setupGame() {
         aSetter.setObject();
+        playMusic(0);
 
     }
 
-    public void startGameThread(){
+    public void startGameThread() {
         gameThread = new Thread(this);
         gameThread.start();
 
@@ -63,12 +61,12 @@ public class GamePanel extends JPanel implements Runnable {
     @Override
     public void run() {
 
-        double drawInterval= 1000000000/FPS; // 0.01666 seconds
-        double nextDrawTime= System.nanoTime() + drawInterval;
+        double drawInterval = 1000000000 / FPS; // 0.01666 seconds
+        double nextDrawTime = System.nanoTime() + drawInterval;
 
 
-        while (gameThread!= null){
-            long currentTime= System.nanoTime();
+        while (gameThread != null) {
+            long currentTime = System.nanoTime();
 
 
             update();
@@ -76,36 +74,51 @@ public class GamePanel extends JPanel implements Runnable {
             repaint();
 
 
-
             try {
-                double remainingTime= nextDrawTime - System.nanoTime();
-                remainingTime= remainingTime /1000000;
+                double remainingTime = nextDrawTime - System.nanoTime();
+                remainingTime = remainingTime / 1000000;
 
-                if( remainingTime < 0){
-                    remainingTime= 0;
+                if (remainingTime < 0) {
+                    remainingTime = 0;
                 }
                 Thread.sleep((long) remainingTime);
                 nextDrawTime += drawInterval;
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
     }
-    public void update(){
+
+    public void update() {
         player.update();
     }
-    public void paintComponent(Graphics g){
+
+    public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         tileM.draw(g2);
-        for (int i = 0; i <obj.length; i++){
-            if (obj [i] != null){
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] != null) {
                 obj[i].draw(g2, this);
             }
         }
 
         player.draw(g2);
         g2.dispose();
+    }
+
+    public void playMusic(int i) {
+        sound.setFile(i);
+        sound.play();
+//        sound.stop();
+    }
+
+    public void stopMusic() {
+        sound.stop();
+    }
+
+    public void playSe(int i) {
+        sound.setFile(i);
+        sound.play();
     }
 }
