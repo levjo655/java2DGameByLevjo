@@ -59,7 +59,7 @@ public class TileManager {
                 String line = br.readLine();
                 String[] numbers = line.split(" ");
                 for (int col = 0; col < gp.maxWorldCol; col++) {
-                    mapTileNum[row][col] = Integer.parseInt(numbers[col]);
+                    mapTileNum[col][row] = Integer.parseInt(numbers[col]);
                 }
             }
         } catch (Exception e) {
