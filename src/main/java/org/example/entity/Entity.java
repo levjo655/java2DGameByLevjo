@@ -28,11 +28,14 @@ public class Entity {
     }
 
     public void setAction() {
+
     }
 
     public void update() {
         setAction();
         collisionOn = false;
+        gp.cChecker.checkObject(this, false);
+        gp.cChecker.checkPlayer(this);
         gp.cChecker.checkTile(this);
         if (collisionOn == false) {
             switch (direction) {
