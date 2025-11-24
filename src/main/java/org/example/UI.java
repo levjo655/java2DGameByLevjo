@@ -11,6 +11,7 @@ public class UI {
     int messageCounter = 0;
     public boolean gameFinished = false;
     public String currentDialogue;
+    public int commandNum =0;
 
 
     public UI(GamePanel gp) {
@@ -32,11 +33,16 @@ public class UI {
         g2.setFont(arial_40);
         g2.setColor(Color.WHITE);
 
+        //title state
+        if (gp.gameState == gp.titleState) {
+            drawTitleScreen();
+
+        }
         if (gp.gameState == gp.playState) {
             // do play stuff later
         }
         if (gp.gameState == gp.pauseState) {
-            //payse state
+            //pause state
             drawPauseScreen();
         }
         // dialogue state
@@ -47,10 +53,67 @@ public class UI {
         }
     }
 
+    public void drawTitleScreen() {
+
+    g2.setColor(Color.BLACK);
+    g2.fillRect(0,0,gp.screenWidth,gp.screenHeight);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 66F));
+        String text = "Blue Boy Adventure";
+        int x = getXForCenteredText(text);
+        int y = gp.tileSize * 3;
+
+        //shadow
+
+        g2.setColor(Color.BLACK);
+        g2.drawString(text, x+5,y+5);
+        // name title
+
+        g2.setColor(Color.WHITE);
+        g2.drawString(text, x, y);
+
+        // blue boy image
+
+
+        x = gp.screenWidth/2 - (gp.tileSize*2/2);
+        y +=gp.tileSize*2;
+        g2.drawImage(gp.player.down1,x,y,gp.tileSize*2,gp.tileSize * 2,null);
+
+        // Menu
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD,40F));
+        text = "NEW GAME";
+        x = getXForCenteredText(text);
+        y+= (int) (gp.tileSize*3.5);
+        g2.drawString(text,x,y);
+        if (commandNum ==0){
+        g2.drawString(">" , x-gp.tileSize,y);
+        }
+
+        text = "LOAD GAME";
+        x = getXForCenteredText(text);
+        y += gp.tileSize;
+        g2.drawString(text, x, y);
+        if (commandNum == 1) {
+            g2.drawString(">", x - gp.tileSize, y);
+        }
+
+
+        text = "QUIT";
+        x = getXForCenteredText(text);
+        y += gp.tileSize ;
+        g2.drawString(text, x, y);
+        if (commandNum == 2) {
+            g2.drawString(">", x - gp.tileSize, y);
+        }
+
+
+    }
+
     public void drawPauseScreen() {
         String text = "PAUSED";
         int x = getXForCenteredText(text);
         int y = gp.screenHeight / 2;
+        g2.drawString(text, x, y);
         g2.drawString(text, x, y);
 
     }
@@ -62,28 +125,28 @@ public class UI {
         int width = gp.screenWidth - (gp.tileSize * 4);
         int height = gp.tileSize * 4;
 
-        drawSubWindow(x,y,width,height);
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN,28));
-         x += gp.tileSize;
-         y += gp.tileSize;
-         for (String line : currentDialogue.split("\n")){
-             g2.drawString(line, x, y);
-             y += 40;
+        drawSubWindow(x, y, width, height);
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28));
+        x += gp.tileSize;
+        y += gp.tileSize;
+        for (String line : currentDialogue.split("\n")) {
+            g2.drawString(line, x, y);
+            y += 40;
 
-         }
+        }
 
 
     }
 
     public void drawSubWindow(int x, int y, int width, int height) {
-        Color c = new Color(0,0,0,210);
-    g2.setColor(c);
-    g2.fillRoundRect(x,y,width,height,35,35);
+        Color c = new Color(0, 0, 0, 210);
+        g2.setColor(c);
+        g2.fillRoundRect(x, y, width, height, 35, 35);
 
-    c = new Color(255, 255,255);
-    g2.setColor(c);
-    g2.setStroke(new BasicStroke(5));
-    g2.drawRoundRect(x+5,y+5,width-10,height-10,25,25);
+        c = new Color(255, 255, 255);
+        g2.setColor(c);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(x + 5, y + 5, width - 10, height - 10, 25, 25);
 
     }
 

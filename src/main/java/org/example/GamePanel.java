@@ -43,10 +43,10 @@ public class GamePanel extends JPanel implements Runnable {
 
     //Game state
     public int gameState;
-    public final int playState= 1;
+    public final int titleState = 0;
+    public final int playState = 1;
     public final int pauseState = 2;
-    public final int dialogueState= 3;
-
+    public final int dialogueState = 3;
 
 
     public GamePanel() {
@@ -61,7 +61,7 @@ public class GamePanel extends JPanel implements Runnable {
         aSetter.setObject();
         aSetter.setNPC();
         playMusic(0);
-        gameState= playState;
+        gameState = titleState;
 
     }
 
@@ -80,13 +80,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         while (gameThread != null) {
             long currentTime = System.nanoTime();
-
-
             update();
-
             repaint();
-
-
             try {
                 double remainingTime = nextDrawTime - System.nanoTime();
                 remainingTime = remainingTime / 1000000;
@@ -104,17 +99,18 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
 
-    if (gameState == playState){
-        player.update();
+        if (gameState == playState) {
+            player.update();
 
-        //NPC
-        for (int i = 0; i< npc.length; i++){
-            if (npc[i] !=null){
-                npc[i].update();
+            //NPC
+            for (int i = 0; i < npc.length; i++) {
+                if (npc[i] != null) {
+                    npc[i].update();
+                }
             }
         }
-    } if (gameState==pauseState){
-        //nothing
+        if (gameState == pauseState) {
+            //nothing
         }
     }
 
@@ -124,38 +120,44 @@ public class GamePanel extends JPanel implements Runnable {
 
         // DEBUGG
         long drawStart = 0;
-        if(keyH.checkDrawTime == true ){
+        if (keyH.checkDrawTime == true) {
             drawStart = System.nanoTime();
         }
 
+        // title screeen
+
+        if (gameState == titleState) {
+            ui.draw(g2);
+        }
+
+        // others
+        else {
+            tileM.draw(g2);
+            for (int i = 0; i < obj.length; i++) {
+                if (obj[i] != null) {
+                    obj[i].draw(g2, this);
+                }
+            }
+            for (int i = 0; i < npc.length; i++) {
+                if (npc[i] != null) {
+                    npc[i].draw(g2);
+                }
+            }
+            player.draw(g2);
+
+            //Ui
+            ui.draw(g2);
+        }
         //TILE
-        tileM.draw(g2);
-        for (int i = 0; i < obj.length; i++) {
-            if (obj[i] != null) {
-                obj[i].draw(g2, this);
-            }
-        }
-        for (int i = 0; i <npc.length; i++){
-            if (npc [i] !=null){
-                npc[i].draw(g2);
-            }
-        }
 
-        player.draw(g2);
-
-        //Ui
-        ui.draw(g2);
         // DEBUG
-        if (keyH.checkDrawTime== true){
+        if (keyH.checkDrawTime == true) {
             long drawEnd = System.nanoTime();
             long passed = drawEnd - drawStart;
             g2.setColor(Color.WHITE);
             g2.drawString("Draw time: " + passed, 10, 400);
             System.out.println("Draw time: " + passed);
-
         }
-
-
 
         g2.dispose();
     }
