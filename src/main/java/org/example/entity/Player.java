@@ -32,6 +32,10 @@ public class Player extends Entity {
         worldY = gp.tileSize * 21;
         speed = 4;
         direction = "down";
+
+        // Player status
+        maxLife = 6;
+        life = maxLife;
     }
 
     public void getPLayerImage() {
@@ -64,10 +68,17 @@ public class Player extends Entity {
             direction = "right";
             moving = true;
         }
+        // After movement code
+        if (!(gp.eHandler.hit (27, 16, "any"))) {
+            inPit = false; // reset once player leaves the pit
+        }
+
 
         // --- Check for collisions ---
         collisionOn = false;
         gp.cChecker.checkTile(this);
+
+        // Check NPC collision
 
         int npcIndex = gp.cChecker.checkEntity(this,gp.npc);
         interactNPC (npcIndex);
@@ -75,6 +86,10 @@ public class Player extends Entity {
         //check obj collision
         int objIndex = gp.cChecker.checkObject(this, true);
         pickUpObject(objIndex);
+
+        // Check Event
+        gp.eHandler.checkEvent ();
+        gp.keyH.enterPressed = false;
 
 
         // --- Move only if a key was pressed ---
@@ -118,7 +133,7 @@ public class Player extends Entity {
                 gp.gameState = gp.dialogueState;
                 gp.npc[i].speak();
         }
-        gp.keyH.enterPressed = false;
+
 
 
 
@@ -151,4 +166,8 @@ public class Player extends Entity {
 
         g2.drawImage(image, screenX, screenY, null);
     }
+
+    // inside Player class
+    public boolean inPit = false;
+
 }
