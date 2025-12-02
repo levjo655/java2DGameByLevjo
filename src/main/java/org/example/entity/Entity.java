@@ -6,14 +6,22 @@ import org.example.UtilityTool;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 public class Entity {
     GamePanel gp;
     public int worldX, worldY;
     public int speed;
 
-    public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-    public String direction;
+    public BufferedImage up1;
+    public BufferedImage up2;
+    public BufferedImage down1;
+    public BufferedImage down2;
+    public BufferedImage left1;
+    public BufferedImage left2;
+    public BufferedImage right1;
+    public BufferedImage right2;
+    public String direction = "down";
 
     public int spriteCounter = 0;
     public int spriteNum = 1;
@@ -24,6 +32,9 @@ public class Entity {
     public int actionLockCounter = 0;
     String[] dialogues = new String[20];
     int dialogueIndex = 0;
+    public BufferedImage image, image2, image3;
+    public String name;
+    public boolean collision = false;
 
     // Character Status
 
@@ -127,6 +138,7 @@ public class Entity {
 
             g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
         }
+
     }
 
 
@@ -135,7 +147,7 @@ public class Entity {
         UtilityTool uTool = new UtilityTool();
         BufferedImage image = null;
         try {
-            image = ImageIO.read(getClass().getClassLoader().getResourceAsStream(imagePath + ".png"));
+            image = ImageIO.read (Objects.requireNonNull (getClass ().getResourceAsStream (imagePath + ".png")));
             image = uTool.scaledImage(image, gp.tileSize, gp.tileSize);
 
         } catch (Exception e) {

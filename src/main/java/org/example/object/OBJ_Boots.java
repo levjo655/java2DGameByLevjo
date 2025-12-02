@@ -1,23 +1,16 @@
 package org.example.object;
 
 import org.example.GamePanel;
+import org.example.entity.Entity;
 
-import javax.imageio.ImageIO;
-import java.io.IOException;
+public class OBJ_Boots extends Entity {
 
-public class OBJ_Boots extends SuperObject{
 
-GamePanel gp;
     public OBJ_Boots(GamePanel gp) {
-        this.gp = gp;
+    super (gp);
         name = "Boots";
-        try {
-            image = ImageIO.read(getClass().getResourceAsStream("/objects/boots.png"));
+        down1= setup ("/objects/boots");
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Key image loaded: " + (image != null));
 
     }
 }

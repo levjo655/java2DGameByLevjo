@@ -2,11 +2,13 @@ package org.example;
 
 import org.example.entity.Entity;
 import org.example.entity.Player;
-import org.example.object.SuperObject;
 import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class GamePanel extends JPanel implements Runnable {
     // screen settings
@@ -27,20 +29,21 @@ public class GamePanel extends JPanel implements Runnable {
     int FPS = 60;
 
     // the system
-    TileManager tileM = new TileManager(this);
-    public KeyHandler keyH = new KeyHandler(this);
-    Sound music = new Sound();
-    Sound se = new Sound();
-    public CollisionChecker cChecker = new CollisionChecker(this);
-    public AssetSetter aSetter = new AssetSetter(this);
-    public Player player = new Player(this, keyH);
-    public UI ui = new UI(this);
+    TileManager tileM = new TileManager (this);
+    public KeyHandler keyH = new KeyHandler (this);
+    Sound music = new Sound ();
+    Sound se = new Sound ();
+    public CollisionChecker cChecker = new CollisionChecker (this);
+    public AssetSetter aSetter = new AssetSetter (this);
+    public Player player = new Player (this, keyH);
+    public UI ui = new UI (this);
     public EventHandler eHandler = new EventHandler (this);
 
     //Entity and objects
     Thread gameThread;
-    public SuperObject obj[] = new SuperObject[10];
+    public Entity obj[] = new Entity[10];
     public Entity[] npc = new Entity[10];
+    ArrayList<Entity> entityList = new ArrayList<> ();
 
     //Game state
     public int gameState;
@@ -50,63 +53,63 @@ public class GamePanel extends JPanel implements Runnable {
     public final int dialogueState = 3;
 
 
-    public GamePanel() {
-        this.setPreferredSize(new Dimension(screenWidth, screenHeight));
-        this.setBackground(Color.BLACK);
-        this.setDoubleBuffered(true);
-        this.addKeyListener(keyH);
-        this.setFocusable(true);
+    public GamePanel () {
+        this.setPreferredSize (new Dimension (screenWidth, screenHeight));
+        this.setBackground (Color.BLACK);
+        this.setDoubleBuffered (true);
+        this.addKeyListener (keyH);
+        this.setFocusable (true);
     }
 
-    public void setupGame() {
-        aSetter.setObject();
-        aSetter.setNPC();
-        playMusic(0);
+    public void setupGame () {
+        aSetter.setObject ();
+        aSetter.setNPC ();
+        playMusic (0);
         gameState = titleState;
 
     }
 
-    public void startGameThread() {
-        gameThread = new Thread(this);
-        gameThread.start();
+    public void startGameThread () {
+        gameThread = new Thread (this);
+        gameThread.start ();
 
     }
 
     @Override
-    public void run() {
+    public void run () {
 
         double drawInterval = 1000000000 / FPS; // 0.01666 seconds
-        double nextDrawTime = System.nanoTime() + drawInterval;
+        double nextDrawTime = System.nanoTime () + drawInterval;
 
 
         while (gameThread != null) {
-            long currentTime = System.nanoTime();
-            update();
-            repaint();
+            long currentTime = System.nanoTime ();
+            update ();
+            repaint ();
             try {
-                double remainingTime = nextDrawTime - System.nanoTime();
+                double remainingTime = nextDrawTime - System.nanoTime ();
                 remainingTime = remainingTime / 1000000;
 
                 if (remainingTime < 0) {
                     remainingTime = 0;
                 }
-                Thread.sleep((long) remainingTime);
+                Thread.sleep ((long) remainingTime);
                 nextDrawTime += drawInterval;
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException (e);
             }
         }
     }
 
-    public void update() {
+    public void update () {
 
         if (gameState == playState) {
-            player.update();
+            player.update ();
 
             //NPC
             for (int i = 0; i < npc.length; i++) {
                 if (npc[i] != null) {
-                    npc[i].update();
+                    npc[i].update ();
                 }
             }
         }
@@ -115,66 +118,86 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public void paintComponent (Graphics g) {
+        super.paintComponent (g);
         Graphics2D g2 = (Graphics2D) g;
 
         // DEBUGG
         long drawStart = 0;
         if (keyH.checkDrawTime == true) {
-            drawStart = System.nanoTime();
+            drawStart = System.nanoTime ();
         }
 
         // title screeen
 
         if (gameState == titleState) {
-            ui.draw(g2);
+            ui.draw (g2);
         }
 
         // others
         else {
-            tileM.draw(g2);
-            for (int i = 0; i < obj.length; i++) {
-                if (obj[i] != null) {
-                    obj[i].draw(g2, this);
-                }
-            }
+            tileM.draw (g2);
+            // ADD entities to the list
+
+            entityList.add (player);
             for (int i = 0; i < npc.length; i++) {
                 if (npc[i] != null) {
-                    npc[i].draw(g2);
+                    entityList.add (npc[i]);
                 }
             }
-            player.draw(g2);
+
+            for (int i = 0; i < obj.length; i++) {
+                if (obj[i] != null) {
+                    entityList.add (obj[i]);
+                }
+            }
+            //SORT
+            Collections.sort (entityList, new Comparator<Entity> () {
+                @Override
+                public int compare (Entity e1, Entity e2) {
+                    int result = Integer.compare (e1.worldY, e2.worldY);
+                    return result;
+                }
+            });
+            // draw entities
+            for (int i = 0; i < entityList.size (); i++) {
+                entityList.get (i).draw (g2);
+            }
+
+            //  Empty Entity list
+            for (int i = 0; i < entityList.size (); i++) {
+                entityList.remove (i);
+            }
 
             //Ui
-            ui.draw(g2);
+            ui.draw (g2);
         }
         //TILE
 
         // DEBUG
         if (keyH.checkDrawTime == true) {
-            long drawEnd = System.nanoTime();
+            long drawEnd = System.nanoTime ();
             long passed = drawEnd - drawStart;
-            g2.setColor(Color.WHITE);
-            g2.drawString("Draw time: " + passed, 10, 400);
-            System.out.println("Draw time: " + passed);
+            g2.setColor (Color.WHITE);
+            g2.drawString ("Draw time: " + passed, 10, 400);
+            System.out.println ("Draw time: " + passed);
         }
 
-        g2.dispose();
+        g2.dispose ();
     }
 
-    public void playMusic(int i) {
-        music.setFile(i);
-        music.play();
+    public void playMusic (int i) {
+        music.setFile (i);
+        music.play ();
 //        sound.stop();
     }
 
-    public void stopMusic() {
-        music.stop();
+    public void stopMusic () {
+        music.stop ();
     }
 
-    public void playSe(int i) {
-        se.setFile(i);
-        se.play();
+    public void playSe (int i) {
+        se.setFile (i);
+        se.play ();
     }
 }
